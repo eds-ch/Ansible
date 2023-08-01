@@ -3,13 +3,22 @@
   become: true
  
   tasks:
+    - name: Add PostgreSQL GPG apt Key Ubuntu
+      apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        state: present
+      when: (ansible_facts['distribution'] == "Ubuntu" )
+
+    - name: Add PostgreSQL Repository Ubuntu
+      apt_repository:
+        repo: deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main
+        state: present
+      when: (ansible_facts['distribution'] == "Ubuntu" )
+
     - name: Install packages
       ansible.builtin.apt:
         name:
-          - postgresql
-          - postgresql-contrib
-          - libpq-dev
-          - python3-psycopg2
+          - postgresql{{ - postgresql_version }}
         state: present
 
     - name: Check if PostgreSQL is initialized
@@ -31,11 +40,11 @@
       vars:
         ansible_ssh_pipelining: true
 
-    - name: Start and enable service
-      ansible.builtin.service:
+    - name: enabling postgresql services
+      service:
         name: postgresql
         state: started
-        enabled: true
+        enabled: yes
 
 - hosts: app
   become: true
