@@ -40,10 +40,41 @@
 - hosts: app
   become: true
   become_user: root
+
+  
   tasks:
+
+    - name: Add Docker GPG apt Key Ubuntu
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      when: (ansible_facts['distribution'] == "Ubuntu" )
+
+    - name: Add Docker Repository Ubuntu
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+      when: (ansible_facts['distribution'] == "Ubuntu" )
+
+    - name: Add Docker Repository CentOS
+      ansible.builtin.yum_repository:
+        name: Docker
+        description: Docker repo
+        baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+        gpgcheck: no
+        state: present
+      when: (ansible_facts['distribution'] == "AlmaLinux" )
+
+
     - name: Install Docker
       package:
         pkg:
-          - docker
+          - docker-ce
         state: latest
         update_cache: true
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
