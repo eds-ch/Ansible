@@ -1,0 +1,18 @@
+## SF
+
+[app]
+vm2 ansible_host=10.100.10.12
+vm3 ansible_host=10.100.10.25
+
+[database]
+vm1 ansible_host=10.100.10.30
+
+[database:vars]
+postgresql_version=12
+postgresql_data_dir=/var/lib/postgresql/{{ postgresql_version }}/main
+postgresql_user=postgres
+postgresql_group=postgres
+postgresql_bin_path=/usr/lib/postgresql/{{ postgresql_version }}/bin
+
+[web]
+vm1 ansible_host=10.100.10.30
